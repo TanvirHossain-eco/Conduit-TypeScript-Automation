@@ -241,6 +241,8 @@ test.describe('Conduit - Articles & Settings', () => {
 
     // ── Edit body only — title left unchanged ─────────────────────────────
     const updatedBody = `Updated body content — ${Date.now()}`;
+    // Wait for 10 seconds for the article to be updated
+    await page.waitForTimeout(10_000);
     await editorPage.fillBody(updatedBody);
     // wait for 10 seconds for the article to be updated
     await page.waitForTimeout(10_000);
