@@ -1,0 +1,64 @@
+# Defines the GitHub Actions workflow name as Playwright Tests.
+name: Playwright Tests
+
+# Triggers the workflow whenever code is pushed or a pull request is made to the main or master branches.
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+# Defines a job named test that will run the automation tasks.
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      # Sets the base URL of the application under test from the environment variable.
+      BASE_URL: ${{ secrets.BASE_URL }}
+      # Sets the base URL of the API under test from the environment variable.
+      API_URL: ${{ secrets.API_URL }}
+      # Sets the email address for a valid, already-registered account, used for login.
+      EMAIL: ${{ secrets.EMAIL }}
+      # Sets the password corresponding to EMAIL, used for login.
+      PASSWORD: ${{ secrets.PASSWORD }}
+      # Sets a deliberately incorrect password, used by the negative-login stage in beforeEach.
+      INVALID_PASSWORD: ${{ secrets.INVALID_PASSWORD }}
+      # Sets the registered username tied to EMAIL/PASSWORD, used to confirm article authorship
+      # during discovery and before edit/delete.
+      AUTHOR_USERNAME: ${{ secrets.AUTHOR_USERNAME }}
+      
+    steps:
+      # Step 1: Checkout code pulls the project’s source code from GitHub into the runner.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Installs the specified Node.js version (LTS) required for running the project.
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      # Step 3: Installs all project dependencies listed in the package-lock.json using npm ci.
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4: Install Playwright Browsers — Downloads and installs all necessary browser binaries and dependencies for Playwright.
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      # Executes all Playwright test cases in parallel across supported browsers.
+      - name: Run Playwright tests
+        run: npx playwright test
+
+      # Generates a Playwright test report in HTML format.
+      - name: Generate Playwright Report
+        run: npx playwright show-report
+
+
+      # Uploads the generated Playwright test report as an artifact to GitHub with a 30-day retention period.
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30 
