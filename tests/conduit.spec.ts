@@ -244,7 +244,7 @@ test.describe('Conduit - Articles & Settings', () => {
     await editorPage.fillBody(updatedBody);
     await editorPage.clickPublish();
     // wait for 10 seconds for the article to be published
-    // await page.waitForTimeout(10000);
+    await page.waitForTimeout(10_000);
 
     const title = currentArticle.title as string;
     const slug  = currentArticle.slug as string;
