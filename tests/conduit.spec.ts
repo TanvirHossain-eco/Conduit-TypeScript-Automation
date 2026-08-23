@@ -243,6 +243,8 @@ test.describe('Conduit - Articles & Settings', () => {
     const updatedBody = `Updated body content — ${Date.now()}`;
     await editorPage.fillBody(updatedBody);
     await editorPage.clickPublish();
+    // wait for 10 seconds for the article to be published
+    await page.waitForTimeout(10000);
 
     const title = currentArticle.title as string;
     const slug  = currentArticle.slug as string;
